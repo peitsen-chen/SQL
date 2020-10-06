@@ -24,8 +24,6 @@ Or
 結合AND和時OR，請確保將各個子句括在括號中，否則依照sql的優先原則，會無法達預期結果，如：
 select * from films where (language='French' or language='Spanish')  and (release_year<2000 and release_year>=1990)
 
-
-
 between
 between是包含性的，這意味著開始和結束值都包含在結果中，如：
 查詢來獲取1994年至2000年之間發行的所有電影的標題
@@ -95,5 +93,84 @@ Select release_year from films
 group by release_year 
 having release_year>1990
 >>>having要放在group by後面
+
+Inner join>>結果不會出現null
+
+ 
+ 
+SELECT c.code AS country_code, name, year, inflation_rate   
+FROM countries AS c     
+>在countries中選取country_code, name, year, inflation_rate，並把countries取名為c，country_code取名為c.code
+   INNER JOIN economies AS e
+        ON c.code = e.code;
+>on：以code當作合併指標，將c.code = e.code當作連接欄位
+>可改寫成INNER JOIN economies AS e using(code)
+
+Else：
+SELECT name, continent, code, surface_area,   >(1)
+CASE WHEN surface_area > 2000000 THEN 'large'  >(2)
+WHEN  surface_area> 350000 THEN 'medium'   >(2)
+ELSE  'small'  END      >(2)
+AS  geosize_group   >(1)
+FROM countries    >(1)
+>(1)：在countries的table中選出name, continent, code, surface_area,，並將選出的表叫做geosize_group
+>(2)：當surface_area>2百萬，則叫large，當2百萬>surface_area>350000則叫medium，其他則叫'small'  
+
+Into：
+SELECT country_code, size,   >(1)
+CASE WHEN size > 50000000 THEN 'large'  >(1)
+WHEN size > 1000000 THEN 'medium'   >(1)
+ELSE 'small' END   >(1)
+AS popsize_group   >(1)
+INTO pop_plus  >(2)
+FROM populations  >(1)
+WHERE year = 2015;   >(1)
+SELECT * FROM pop_plus; >(3)
+>into： 用來從某資料表查詢所得之資料集結果新增到另一個新建的資料表中。此一指令常用來複製備份資料表，或將資料表輸出至另一資料庫中
+>(1)：同上一題
+>(2)：將(1)的內容匯入pop_plus的資料庫
+>(3)：從pop_plus中挑選出所有資料
+
+Left join：
+#圖看WORD
+SELECT c1.name AS city, code, c2.name AS country,region, city_proper_pop
+FROM cities AS c1
+LEFT JOIN countries AS c2
+ON c1.country_code = c2.code
+ORDER BY code DESC
+>左邊：c1 右邊：c2
+>以左邊表為主，把右邊加入左邊，若有欄位是左邊有右邊沒有，右邊呈現null
+
+Right join
+#圖看WORD
+Union：
+UNION 就是像是 OR (聯集)，如果紀錄存在於第一個查詢結果集或第二個查詢結果集中，就會被取出。
+UNION 與 JOIN 不同的地方在於，JOIN 是作橫向結合 (合併多個資料表的各欄位)；而 UNION 則是作垂直結合 (合併多個資料表中的紀錄)
+SELECT country_code
+FROM cities	
+UNION   >Set theory clause
+SELECT code
+FROM currencies
+ORDER BY country_code
+
+UNION
+重複資料只顯示一次
+刪除重複資料（相當於DISTINCT）
+UNION ALL
+所有資料都會顯示，不管是否重複
+不會刪除重複資料，較佳的執行效能
+UNION ALL指令是將各子查詢的資料集直接合併，UNION指令則是合併後排序並剔除重複資料；因UNION需排序動作故將耗用較多之資源，使用上要多注意
+
+Intersact：
+INTERSECT 運算子則像是 AND (交集)，如果紀錄存在於第一個查詢結果集內同時亦存在於第二個查詢結果集內時，才會被取出
+
+
+
+
+
+
+
+
+
 
 
